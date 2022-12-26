@@ -1,5 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:camera/camera.dart';
-import 'package:camera_test/tflite/Recognition.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 
@@ -17,7 +19,6 @@ class Camera extends StatefulWidget {
 
 class _CameraState extends State<Camera> {
   late CameraController cameraController;
-  late List _recognitions;
   bool isDetecting = false;
 
   @override
@@ -25,31 +26,28 @@ class _CameraState extends State<Camera> {
     super.initState();
 
     cameraController =
-        CameraController(widget.cameras.first, ResolutionPreset.medium);
+        CameraController(widget.cameras.first, ResolutionPreset.high);
     cameraController.initialize().then((value) {
       if (!mounted) {
         return;
       }
       setState(() {});
 
-      cameraController.startImageStream((CameraImage img) {
+      cameraController.startImageStream((img) {
         if (!isDetecting) {
           isDetecting = true;
-
-          int startTime = new DateTime.now().millisecondsSinceEpoch;
-
+          List<Uint8List> bytesList = img.planes.map((e) {
+            return e.bytes;
+          }).toList();
           Tflite.runModelOnFrame(
-            bytesList: img.planes.map((plane) {
-              return plane.bytes;
-            }).toList(),
+            bytesList: bytesList,
             imageHeight: img.height,
             imageWidth: img.width,
-            numResults: 1,
+            numResults: 2,
           ).then((recognitions) {
-            int endTime = new DateTime.now().millisecondsSinceEpoch;
-            print("Detection took ${endTime - startTime}");
-            print(recognitions);
-
+            if (recognitions != null) {
+              widget.setRecognitions(recognitions);
+            }
             isDetecting = false;
           });
         }
@@ -61,21 +59,45 @@ class _CameraState extends State<Camera> {
   void dispose() {
     cameraController.dispose();
     super.dispose();
+    Tflite.close();
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   if (!cameraController.value.isInitialized) {
+  //     return Container();
+  //   }
+
+  //   return Transform.scale(
+  //     scale: 1 /
+  //         (cameraController.value.aspectRatio *
+  //             MediaQuery.of(context).size.aspectRatio),
+  //     child: Center(
+  //       child: CameraPreview(cameraController),
+  //     ),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    if (!cameraController.value.isInitialized) {
+    if (cameraController == null || !cameraController.value.isInitialized) {
       return Container();
     }
 
-    return Transform.scale(
-      scale: 1 /
-          (cameraController.value.aspectRatio *
-              MediaQuery.of(context).size.aspectRatio),
-      child: Center(
-        child: CameraPreview(cameraController),
-      ),
+    var tmp = MediaQuery.of(context).size;
+    var screenH = math.max(tmp.height, tmp.width);
+    var screenW = math.min(tmp.height, tmp.width);
+    tmp = cameraController.value.previewSize!;
+    var previewH = math.max(tmp.height, tmp.width);
+    var previewW = math.min(tmp.height, tmp.width);
+    var screenRatio = screenH / screenW;
+    var previewRatio = previewH / previewW;
+
+    return OverflowBox(
+      maxHeight:
+          screenRatio > previewRatio ? screenH : screenW / previewW * previewH,
+      maxWidth:
+          screenRatio > previewRatio ? screenH / previewH * previewW : screenW,
+      child: CameraPreview(cameraController),
     );
   }
 }

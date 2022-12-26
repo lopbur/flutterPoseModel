@@ -4,21 +4,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 
 import 'package:camera_test/widgets/camera_view.dart';
+import 'package:camera_test/widgets/Status_view.dart';
 
 class MyHomePage extends StatefulWidget {
-  final List<CameraDescription> cameras;
-  const MyHomePage({required this.cameras, super.key});
+  late List<CameraDescription> cameras;
+  MyHomePage({required this.cameras, super.key});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String? res = "";
-  bool isModelLoaded = false;
-  late List<dynamic> _recognitions;
+  late List<dynamic> _recognitions = [];
+  String predOne = '';
+  double confidence = 0;
+  double index = 0;
 
   Future<void> initSyncState() async {
     Tflite.close();
+    String? res;
     try {
       res = await Tflite.loadModel(
           model: 'assets/model_unquant.tflite',
@@ -26,10 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
           numThreads: 1,
           isAsset: true,
           useGpuDelegate: false);
-      isModelLoaded = true;
       print(res);
     } on PlatformException catch (e) {
-      print('error: ');
       print(e.message);
     }
   }
@@ -38,7 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _recognitions = recognitions;
     });
-    print(_recognitions);
   }
 
   @override
@@ -58,15 +59,29 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           backgroundColor: Colors.blueAccent,
         ),
-        body: isModelLoaded
-            ? const Text("Wait for initiation.")
-            : Stack(
-                children: <Widget>[
-                  Camera(
-                    cameras: widget.cameras,
-                    setRecognitions: setRecognitions,
-                  )
-                ],
-              ));
+        body: Stack(
+          children: <Widget>[
+            Camera(
+              cameras: widget.cameras,
+              setRecognitions: setRecognitions,
+            ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Card(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    StatusCard(
+                        classname: _recognitions.isEmpty
+                            ? ""
+                            : _recognitions[0]['label'],
+                        confidence: _recognitions.isEmpty
+                            ? 0.0
+                            : _recognitions[0]['confidence'])
+                  ],
+                )))
+          ],
+        ));
   }
 }
