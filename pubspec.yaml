@@ -31,6 +31,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_tflite: ^1.0.1
+  image: ^3.2.2
+  camera: ^0.10.1
+  path_provider: ^2.0.11
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -40,11 +44,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  camera:
-    git:
-      url: https://github.com/flutter/plugins
-      path: packages/camera/camera
-      ref: 9e46048ad2e1f085c1e8f6c77391fa52025e681f
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -63,6 +62,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+   - assets/labels.txt
+   - assets/model_unquant.tflite
 
   # To add assets to your application, add an assets section, like this:
   # assets:
