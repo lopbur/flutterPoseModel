@@ -68,21 +68,6 @@ class _CameraState extends State<Camera> {
     Tflite.close();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   if (!cameraController.value.isInitialized) {
-  //     return Container();
-  //   }
-
-  //   return Transform.scale(
-  //     scale: 1 /
-  //         (cameraController.value.aspectRatio *
-  //             MediaQuery.of(context).size.aspectRatio),
-  //     child: Center(
-  //       child: CameraPreview(cameraController),
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     if (cameraController == null || !cameraController.value.isInitialized) {

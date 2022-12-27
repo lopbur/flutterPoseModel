@@ -38,10 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // setRecognitions(List<dynamic> recognitions) {
-  //   _recognitions = recognitions;
-  // }
-
   setRecognitions(List<Recognition> l) {
     setState(() {
       if (l.length == 1) {
