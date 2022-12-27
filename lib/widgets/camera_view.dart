@@ -5,7 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 
-typedef void Callback(List<dynamic> list);
+import 'package:camera_test/tflite/status.dart';
+
+// typedef Callback = void Function(List<dynamic> list);
+typedef Callback = void Function(List<Recognition> list);
 
 class Camera extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -46,7 +49,10 @@ class _CameraState extends State<Camera> {
             numResults: 2,
           ).then((recognitions) {
             if (recognitions != null) {
-              widget.setRecognitions(recognitions);
+              List<Recognition> l = recognitions.map((e) {
+                return Recognition.set(e['index'], e['label'], e['confidence']);
+              }).toList();
+              widget.setRecognitions(l);
             }
             isDetecting = false;
           });

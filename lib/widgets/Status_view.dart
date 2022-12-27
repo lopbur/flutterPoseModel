@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:camera_test/tflite/status.dart';
 
 class StatusCard extends StatefulWidget {
-  late String classname;
-  late double confidence;
+  Recognition recognition = Recognition();
 
-  StatusCard({required this.classname, required this.confidence, super.key});
+  StatusCard({required this.recognition, super.key});
 
   @override
   State<StatusCard> createState() => _StatusCardState();
@@ -17,7 +17,7 @@ class _StatusCardState extends State<StatusCard> {
       Expanded(
           flex: 2,
           child: Text(
-            widget.classname,
+            widget.recognition.label,
             style: const TextStyle(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.w600,
@@ -32,14 +32,14 @@ class _StatusCardState extends State<StatusCard> {
                   LinearProgressIndicator(
                     valueColor:
                         const AlwaysStoppedAnimation<Color>(Colors.redAccent),
-                    value: widget.confidence,
+                    value: widget.recognition.score,
                     backgroundColor: Colors.redAccent.withOpacity(0.2),
                     minHeight: 50.0,
                   ),
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      '${(widget.confidence * 100).toStringAsFixed(0)}%',
+                      '${(widget.recognition.score * 100).toStringAsFixed(0)}%',
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

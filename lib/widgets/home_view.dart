@@ -6,6 +6,8 @@ import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:camera_test/widgets/camera_view.dart';
 import 'package:camera_test/widgets/Status_view.dart';
 
+import 'package:camera_test/tflite/status.dart';
+
 class MyHomePage extends StatefulWidget {
   late List<CameraDescription> cameras;
   MyHomePage({required this.cameras, super.key});
@@ -15,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late List<dynamic> _recognitions = [];
+  final List<Recognition> _recognitions = List.filled(2, Recognition());
   String predOne = '';
   double confidence = 0;
   double index = 0;
@@ -36,9 +38,20 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  setRecognitions(recognitions) {
+  // setRecognitions(List<dynamic> recognitions) {
+  //   _recognitions = recognitions;
+  // }
+
+  setRecognitions(List<Recognition> l) {
     setState(() {
-      _recognitions = recognitions;
+      if (l.length == 1) {
+        _recognitions[l[0].id] = l.first;
+        _recognitions[1 - l[0].id].score = 1 - l.first.score;
+      } else {
+        for (var e in l) {
+          _recognitions[e.id] = e;
+        }
+      }
     });
   }
 
@@ -72,13 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    StatusCard(
-                        classname: _recognitions.isEmpty
-                            ? ""
-                            : _recognitions[0]['label'],
-                        confidence: _recognitions.isEmpty
-                            ? 0.0
-                            : _recognitions[0]['confidence'])
+                    StatusCard(recognition: _recognitions[0]),
+                    StatusCard(recognition: _recognitions[1])
                   ],
                 )))
           ],
