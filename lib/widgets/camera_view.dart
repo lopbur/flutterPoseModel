@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tflite/flutter_tflite.dart';
 
-import 'package:camera_test/tflite/status.dart';
+import 'package:camera_test/models/recognition_model.dart';
 
 // typedef Callback = void Function(List<dynamic> list);
 typedef Callback = void Function(List<Recognition> list);
@@ -39,11 +40,11 @@ class _CameraState extends State<Camera> {
       cameraController.startImageStream((img) {
         if (!isDetecting) {
           isDetecting = true;
-          List<Uint8List> bytesList = img.planes.map((e) {
-            return e.bytes;
-          }).toList();
+
           Tflite.runModelOnFrame(
-            bytesList: bytesList,
+            bytesList: img.planes.map((e) {
+              return e.bytes;
+            }).toList(),
             imageHeight: img.height,
             imageWidth: img.width,
             numResults: 2,
@@ -52,7 +53,9 @@ class _CameraState extends State<Camera> {
               List<Recognition> l = recognitions.map((e) {
                 return Recognition.set(e['index'], e['label'], e['confidence']);
               }).toList();
-              widget.setRecognitions(l);
+              if (mounted) {
+                widget.setRecognitions(l);
+              }
             }
             isDetecting = false;
           });
@@ -63,14 +66,14 @@ class _CameraState extends State<Camera> {
 
   @override
   void dispose() {
+    Tflite.close();
     cameraController.dispose();
     super.dispose();
-    Tflite.close();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (cameraController == null || !cameraController.value.isInitialized) {
+    if (!cameraController.value.isInitialized) {
       return Container();
     }
 

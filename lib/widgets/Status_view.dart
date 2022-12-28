@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:camera_test/tflite/status.dart';
+import 'package:camera_test/models/recognition_model.dart';
 
 class StatusCard extends StatefulWidget {
-  Recognition recognition = Recognition();
+  late Recognition recognition;
 
   StatusCard({required this.recognition, super.key});
 
@@ -15,7 +15,7 @@ class _StatusCardState extends State<StatusCard> {
   Widget build(BuildContext context) {
     return Row(children: [
       Expanded(
-          flex: 2,
+          flex: 3,
           child: Text(
             widget.recognition.label,
             style: const TextStyle(
@@ -24,7 +24,7 @@ class _StatusCardState extends State<StatusCard> {
                 fontSize: 20.0),
           )),
       Expanded(
-          flex: 8,
+          flex: 7,
           child: SizedBox(
               height: 32.0,
               child: Stack(
