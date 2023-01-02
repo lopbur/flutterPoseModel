@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-class RunModel extends StatefulWidget {
+class WebView extends StatefulWidget {
   final String path;
   final Function(String) results;
-  const RunModel({Key? key, required this.path, required this.results})
+  const WebView({Key? key, required this.path, required this.results})
       : super(key: key);
 
   @override
-  State<RunModel> createState() => _RunModelState();
+  State<WebView> createState() => _WebViewState();
 }
 
-class _RunModelState extends State<RunModel> {
+class _WebViewState extends State<WebView> {
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
       mediaPlaybackRequiresUserGesture: false,
