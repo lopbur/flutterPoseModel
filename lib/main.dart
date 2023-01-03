@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Permission.camera.request();
-  await Permission.microphone.request();
+  // await Permission.microphone.request(); //maybe need audio permission
 
   runApp(const MyApp());
 }
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter pose demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.blueGrey,
         ),
         home: const MainHome());
   }

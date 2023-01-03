@@ -43,7 +43,7 @@ class _ModelListState extends State<ModelList> {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RunModel()));
+            context, MaterialPageRoute(builder: (context) => const RunModel()));
       },
       child: ListTile(title: Text(path)),
     );

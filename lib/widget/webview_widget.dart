@@ -38,12 +38,21 @@ class _WebViewState extends State<WebView> {
         });
   };
 
+  var onLoadStop = (InAppWebViewController controller, Uri? uri) async {
+    controller.evaluateJavascript(
+      source:
+          'init(\'https://teachablemachine.withgoogle.com/models/L1bAAtj82/\')',
+    );
+  };
+
   @override
   Widget build(BuildContext context) {
     return InAppWebView(
       initialFile: widget.path,
+      initialData: InAppWebViewInitialData(data: "asdasd"),
       initialOptions: options,
       onWebViewCreated: onWebViewCreated,
+      onLoadStop: onLoadStop,
       androidOnPermissionRequest: (InAppWebViewController controller,
           String origin, List<String> resources) async {
         return PermissionRequestResponse(
