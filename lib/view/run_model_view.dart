@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:pose_webview_test/model/recognition_model.dart';
+import 'package:pose_webview_test/model/tf_model.dart';
 import 'package:pose_webview_test/widget/status_bar_widget.dart';
 import 'package:pose_webview_test/widget/webview_widget.dart';
 
 class RunModel extends StatefulWidget {
-  const RunModel({super.key});
+  final Model targetModel;
+  const RunModel({Key? key, required this.targetModel}) : super(key: key);
 
   @override
   State<RunModel> createState() => _RunModelState();
@@ -32,12 +34,16 @@ class _RunModelState extends State<RunModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Pose fiClassier")),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('${widget.targetModel.name ?? ''} pose classfier'),
+      ),
       body: Column(
         children: [
           Expanded(
             child: WebView(
               path: "assets/model/index.html",
+              targetURI: widget.targetModel.uri ?? '',
               results: resultCallback,
             ),
           ),

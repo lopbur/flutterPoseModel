@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:pose_webview_test/model/tf_model.dart';
 import 'package:pose_webview_test/view/run_model_view.dart';
 
 class ModelList extends StatefulWidget {
@@ -11,16 +12,23 @@ class ModelList extends StatefulWidget {
 }
 
 class _ModelListState extends State<ModelList> {
+  final Map<String, String> _models = {
+    'Tree': 'L1bAAtj82',
+    'Raise arms': '7Zvxry4Iz',
+    'Open arms': 'YgPVd6DwL',
+  };
+  List<Model> models = [];
   List<String> modelPath = [];
 
   @override
   initState() {
-    loadModelPath(context);
+    loadModel(context);
     super.initState();
   }
 
-  loadModelPath(BuildContext context) async {
+  loadModel(BuildContext context) async {
     List<String> filteredAssetList = [];
+    List<Model> _m = [];
 
     var assetsFile =
         await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
@@ -34,18 +42,23 @@ class _ModelListState extends State<ModelList> {
       filteredAssetList.add(e);
     }
 
+    _models.forEach(
+      (key, value) => _m.add(Model(name: key, uri: value)),
+    );
+
     setState(() {
       modelPath = filteredAssetList;
+      models = _m;
     });
   }
 
-  Widget _buildListItem(BuildContext context, String path) {
+  Widget _buildListItem(BuildContext context, int index, Model m) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const RunModel()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => RunModel(targetModel: m)));
       },
-      child: ListTile(title: Text(path)),
+      child: ListTile(title: Text(m.name ?? '')),
     );
   }
 
@@ -61,9 +74,9 @@ class _ModelListState extends State<ModelList> {
       ),
       body: modelPath.isNotEmpty
           ? ListView.builder(
-              itemCount: modelPath.length,
+              itemCount: models.length,
               itemBuilder: (context, index) {
-                return _buildListItem(context, modelPath[index]);
+                return _buildListItem(context, index, models[index]);
               })
           : Container(),
     );

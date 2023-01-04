@@ -5,8 +5,13 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class WebView extends StatefulWidget {
   final String path;
+  final String targetURI;
   final Function(String) results;
-  const WebView({Key? key, required this.path, required this.results})
+  const WebView(
+      {Key? key,
+      required this.path,
+      required this.targetURI,
+      required this.results})
       : super(key: key);
 
   @override
@@ -14,6 +19,8 @@ class WebView extends StatefulWidget {
 }
 
 class _WebViewState extends State<WebView> {
+  final String baseURL = 'https://teachablemachine.withgoogle.com/models/';
+
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
     crossPlatform: InAppWebViewOptions(
       mediaPlaybackRequiresUserGesture: false,
@@ -38,10 +45,9 @@ class _WebViewState extends State<WebView> {
         });
   };
 
-  var onLoadStop = (InAppWebViewController controller, Uri? uri) async {
+  late var onLoadStop = (InAppWebViewController controller, Uri? uri) async {
     controller.evaluateJavascript(
-      source:
-          'init(\'https://teachablemachine.withgoogle.com/models/L1bAAtj82/\')',
+      source: 'init(\'${baseURL + widget.targetURI}/\')',
     );
   };
 
@@ -49,7 +55,6 @@ class _WebViewState extends State<WebView> {
   Widget build(BuildContext context) {
     return InAppWebView(
       initialFile: widget.path,
-      initialData: InAppWebViewInitialData(data: "asdasd"),
       initialOptions: options,
       onWebViewCreated: onWebViewCreated,
       onLoadStop: onLoadStop,
